@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+  display: none;
+}
+
+button {
+  background-color: oklch(0.546 0.245 262.881) !important;
+}
