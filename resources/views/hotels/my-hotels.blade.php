@@ -14,6 +14,9 @@
                             <button id="my-hotels-tab" class="border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                                 My Registered Hotels
                             </button>
+                            <button id="booking-requests-tab" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                Booking Requests
+                            </button>
                             <button id="my-bookings-tab" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                                 My Bookings
                             </button>
@@ -50,6 +53,53 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <a href="{{ route('hotels.edit', $hotel->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Booking Requests Tab Content -->
+                    <div id="booking-requests-content" class="mt-6 hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hotel Name</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guest</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check In</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check Out</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guests</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Cost</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($hotelBookingRequests as $booking)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $booking->hotel->name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">Room {{ $booking->room->room_number }} - {{ $booking->room->type }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $booking->user->name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $booking->check_in ? \Carbon\Carbon::parse($booking->check_in)->toDateString() : '' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $booking->check_out ? \Carbon\Carbon::parse($booking->check_out)->toDateString() : '' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $booking->number_of_guests }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">${{ number_format($booking->total_cost, 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                            <form action="{{ route('bookings.update', $booking->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="status" value="confirmed">
+                                                <button type="submit" class="text-green-600 hover:text-green-900">Accept</button>
+                                            </form>
+                                            <form action="{{ route('bookings.update', $booking->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="status" value="cancelled">
+                                                <button type="submit" class="text-red-600 hover:text-red-900">Decline</button>
+                                            </form>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -101,27 +151,33 @@
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const myHotelsTab = document.getElementById('my-hotels-tab');
-            const myBookingsTab = document.getElementById('my-bookings-tab');
-            const myHotelsContent = document.getElementById('my-hotels-content');
-            const myBookingsContent = document.getElementById('my-bookings-content');
+            const tabs = {
+                'my-hotels-tab': 'my-hotels-content',
+                'booking-requests-tab': 'booking-requests-content',
+                'my-bookings-tab': 'my-bookings-content'
+            };
 
-            function switchTab(activeTab, activeContent, inactiveTab, inactiveContent) {
-                activeTab.classList.add('border-indigo-500', 'text-indigo-600');
-                activeTab.classList.remove('border-transparent', 'text-gray-500');
-                activeContent.classList.remove('hidden');
+            function switchTab(activeTabId) {
+                // Update tab styles
+                Object.keys(tabs).forEach(tabId => {
+                    const tab = document.getElementById(tabId);
+                    const content = document.getElementById(tabs[tabId]);
 
-                inactiveTab.classList.remove('border-indigo-500', 'text-indigo-600');
-                inactiveTab.classList.add('border-transparent', 'text-gray-500');
-                inactiveContent.classList.add('hidden');
+                    if (tabId === activeTabId) {
+                        tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                        tab.classList.add('border-indigo-500', 'text-indigo-600');
+                        content.classList.remove('hidden');
+                    } else {
+                        tab.classList.remove('border-indigo-500', 'text-indigo-600');
+                        tab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                        content.classList.add('hidden');
+                    }
+                });
             }
 
-            myHotelsTab.addEventListener('click', () => {
-                switchTab(myHotelsTab, myHotelsContent, myBookingsTab, myBookingsContent);
-            });
-
-            myBookingsTab.addEventListener('click', () => {
-                switchTab(myBookingsTab, myBookingsContent, myHotelsTab, myHotelsContent);
+            // Add click event listeners to tabs
+            Object.keys(tabs).forEach(tabId => {
+                document.getElementById(tabId).addEventListener('click', () => switchTab(tabId));
             });
         });
     </script>

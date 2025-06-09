@@ -32,7 +32,7 @@
                 <a href="{{ route('hotels.show', $hotel->id) }}" class="block mb-2">
                     <h2 class="mb-2 text-2xl font-bold text-blue-600 hover:text-blue-800">{{ $hotel->name }}</h2>
                 </a>
-
+                <span>{{ $hotel->city_relation->name ?? 'N/A' }}</span>
                 <div class="flex items-center mt-2">
                     <span class="mr-2 text-gray-600">Rating:</span>
                     <div class="flex">
@@ -49,6 +49,7 @@
                             @endfor
                     </div>
                 </div>
+                <span>price: ${{ $hotel->price_per_night ?? 'N/A' }}</span>
                 <div class="flex mt-4 space-x-4">
                     <a href="{{ route('hotels.show', $hotel) }}"
                         class='inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150'>

@@ -17,6 +17,9 @@ Route::get('/about', function () {
     return view('about');
 })->name('about');
 
+// Search route
+Route::get('/search', [HotelsController::class, 'search'])->name('hotels.search');
+
 // Hotel routes
 Route::get('/hotels', [HotelsController::class, 'index'])->name('hotels.index');
 Route::get('/hotels/{hotel}', [HotelsController::class, 'show'])->name('hotels.show');
@@ -41,6 +44,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/hotel/{hotelId}/book/{roomId}', [BookingController::class, 'create'])->name('hotel.book');
     Route::post('/hotel/book', [BookingController::class, 'store'])->name('hotel.book.store');
     Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
+    Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
 
     // Hotel Items Management
     Route::resource('hotel-items', HotelItemsController::class)->except(['index', 'create', 'show', 'edit']);

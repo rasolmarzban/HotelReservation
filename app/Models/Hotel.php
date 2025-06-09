@@ -77,19 +77,19 @@ class Hotel extends Model
     }
 
     // Define relationship with City
-    public function city()
+    public function city_relation()
     {
         return $this->belongsTo(Cities::class, 'city');
     }
 
     // Define relationship with Province
-    public function province()
+    public function province_relation()
     {
         return $this->belongsTo(Provinces::class, 'province');
     }
 
     // Define relationship with Country
-    public function country()
+    public function country_relation()
     {
         return $this->belongsTo(Countries::class, 'country');
     }

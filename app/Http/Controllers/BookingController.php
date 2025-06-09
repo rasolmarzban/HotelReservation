@@ -74,4 +74,34 @@ class BookingController extends Controller
 
         return view('bookings.show', compact('booking'));
     }
+
+    public function update(Request $request, Booking $booking)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'status' => 'required|in:confirmed,cancelled'
+        ]);
+
+        // Update the booking status
+        $booking->update([
+            'status' => $validated['status']
+        ]);
+
+        // Update room availability based on booking status
+        if ($validated['status'] === 'cancelled') {
+            // If booking is cancelled, make the room available again
+            $booking->room->update([
+                'status' => 'available',
+                'is_available' => true
+            ]);
+        } else if ($validated['status'] === 'confirmed') {
+            // If booking is confirmed, make the room unavailable
+            $booking->room->update([
+                'status' => 'unavailable',
+                'is_available' => false
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Booking status updated successfully.');
+    }
 }

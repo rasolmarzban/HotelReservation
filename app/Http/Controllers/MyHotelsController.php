@@ -20,6 +20,13 @@ class MyHotelsController extends Controller
             ->where('user_id', auth()->id())
             ->get();
 
-        return view('hotels.my-hotels', compact('myHotels', 'myBookings'));
+        $hotelBookingRequests = Booking::with(['hotel', 'room', 'user'])
+            ->whereHas('hotel', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->where('status', 'pending')
+            ->get();
+
+        return view('hotels.my-hotels', compact('myHotels', 'myBookings', 'hotelBookingRequests'));
     }
 }

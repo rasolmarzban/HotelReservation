@@ -14,7 +14,7 @@ class HotelsController extends Controller
     // Display a list of hotels
     public function index()
     {
-        $hotels = Hotel::with(['hotelItems', 'city', 'province', 'country'])->get(); // Optimized eager loading
+        $hotels = Hotel::with(['hotelItems', 'city_relation', 'province_relation', 'country_relation'])->get(); // Optimized eager loading
 
         // Add logging to see the data
         \Log::info('Hotels data being passed to view:', [
@@ -25,12 +25,33 @@ class HotelsController extends Controller
                     'city' => $hotel->city,
                     'province' => $hotel->province,
                     'country' => $hotel->country,
-                    'city_relation' => $hotel->city()->first(),
-                    'province_relation' => $hotel->province()->first(),
-                    'country_relation' => $hotel->country()->first(),
+                    'city_relation' => $hotel->city_relation,
+                    'province_relation' => $hotel->province_relation,
+                    'country_relation' => $hotel->country_relation,
                 ];
             })->toArray()
         ]);
+
+        return view('home', compact('hotels'));
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $hotels = Hotel::with(['hotelItems', 'city_relation', 'province_relation', 'country_relation'])
+            ->where('name', 'like', "%{$query}%")
+            ->orWhere('location', 'like', "%{$query}%")
+            ->orWhereHas('city_relation', function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%");
+            })
+            ->orWhereHas('province_relation', function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%");
+            })
+            ->orWhereHas('country_relation', function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%");
+            })
+            ->get();
 
         return view('home', compact('hotels'));
     }

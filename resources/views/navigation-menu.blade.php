@@ -5,9 +5,9 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="flex items-center shrink-0" style="padding-right: 50px;">
-                    <a href="{{ route('home') }}" class="flex items-center">
-                        <x-application-mark class="block w-auto h-9" />
-                        <span class="ml-2 text-xl font-bold text-gray-800">Hotel Reservation</span>
+                    <a href="{{ route('home') }}" class="flex items-center" style="text-decoration: none;">
+                        <img src="{{ asset('images/logo.png') }}" alt="Hotel Reservation Logo" class="block" style="width: 75px;">
+                        <span style=" font-weight: 900; font-size: 20px; ">Hotel Reservation</span>
                     </a>
                 </div>
 
@@ -29,16 +29,17 @@
 
             <!-- Search Bar -->
             <div class="flex items-center">
-                <div class="relative">
+                <form action="{{ route('hotels.search') }}" method="GET" class="relative">
                     <input type="text"
+                        name="query"
                         placeholder="Search hotels..."
                         class="w-64 px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                    <button class="relative" style="top: 6px;">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-top: 10px; margin-left: 5px;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </button>
-                </div>
+                </form>
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">
